@@ -1,0 +1,60 @@
+{
+  "name": "@davidterranova/homebridge-rika-firenet",
+  "version": "1.0.0",
+  "description": "Memory-efficient Homebridge v2 plugin to control RIKA Firenet pellet stoves as a HomeKit thermostat.",
+  "license": "MIT",
+  "type": "module",
+  "author": "David Terranova",
+  "homepage": "https://github.com/davidterranova/homebridge-rika-firenet#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidterranova/homebridge-rika-firenet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidterranova/homebridge-rika-firenet/issues"
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "rika",
+    "firenet",
+    "pellet",
+    "stove",
+    "thermostat",
+    "homekit"
+  ],
+  "engines": {
+    "homebridge": "^1.8.0 || ^2.0.0",
+    "node": "^22.12.0 || ^24.0.0"
+  },
+  "main": "dist/index.js",
+  "exports": "./dist/index.js",
+  "files": [
+    "dist",
+    "config.schema.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run lint && npm run build",
+    "lint": "eslint src test --max-warnings 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.17.0",
+    "homebridge": "^2.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^2.1.8"
+  }
+}
