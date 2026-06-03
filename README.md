@@ -5,7 +5,7 @@
 
 A memory-efficient, [Homebridge v2](https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0) compatible plugin that exposes a [RIKA Firenet](https://www.rika-firenet.com) pellet stove to Apple Home (and any Matter platform bridged by Homebridge) as a HomeKit **thermostat**.
 
-It is a modern, ESM, fully type-checked and unit-tested rewrite that replaces the older `rika-homebridge-firenet` plugin, which is not compatible with Homebridge v2 and is not memory efficient.
+It is a modern, ESM, fully type-checked and unit-tested implementation built for Homebridge v2 with a focus on low memory usage.
 
 ## Features
 
