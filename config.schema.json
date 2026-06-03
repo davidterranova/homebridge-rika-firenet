@@ -6,25 +6,28 @@
   "footerDisplay": "For help, see the [project README](https://github.com/davidterranova/homebridge-rika-firenet#readme).",
   "schema": {
     "type": "object",
+    "required": [
+      "name",
+      "email",
+      "password",
+      "stoveID"
+    ],
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
         "default": "Rika Stove",
-        "required": true,
         "description": "Name shown for the platform in the Homebridge logs."
       },
       "email": {
         "title": "RIKA Firenet Email",
         "type": "string",
         "format": "email",
-        "required": true,
         "description": "The email address of your rika-firenet.com account."
       },
       "password": {
         "title": "RIKA Firenet Password",
         "type": "string",
-        "required": true,
         "description": "The password of your rika-firenet.com account.",
         "x-schema-form": {
           "type": "password"
@@ -33,8 +36,7 @@
       "stoveID": {
         "title": "Stove ID",
         "type": "string",
-        "required": false,
-        "description": "Optional. The numeric stove identifier (visible in the rika-firenet.com URL). If left blank and the account has exactly one stove, it is detected automatically."
+        "description": "Required. The numeric stove identifier (visible in the rika-firenet.com URL)."
       },
       "pollingInterval": {
         "title": "Polling Interval (seconds)",
@@ -42,7 +44,6 @@
         "default": 60,
         "minimum": 60,
         "maximum": 3600,
-        "required": false,
         "description": "How often to refresh the stove status. RIKA recommends a minimum of 60 seconds."
       },
       "minTemperature": {
@@ -50,16 +51,14 @@
         "type": "integer",
         "default": 14,
         "minimum": 5,
-        "maximum": 30,
-        "required": false
+        "maximum": 30
       },
       "maxTemperature": {
         "title": "Maximum Target Temperature (°C)",
         "type": "integer",
         "default": 28,
         "minimum": 10,
-        "maximum": 40,
-        "required": false
+        "maximum": 40
       }
     }
   }
