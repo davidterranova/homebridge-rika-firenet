@@ -94,8 +94,9 @@ Apple Home  ⇄  Homebridge  ⇄  RikaFirenetPlatform
 ```bash
 make install         # install dependencies
 make build           # compile TypeScript to dist/
-make test            # run the unit tests (Vitest)
+make test            # run the unit tests (Vitest), plus the smoke test if creds are set
 make coverage        # run tests with a coverage report
+make smoke           # read-only API smoke test against a real stove (STOVE_ID, RIKA_EMAIL, RIKA_PASSWORD)
 make lint            # eslint
 make update          # update dependencies within package.json ranges
 ```
@@ -113,8 +114,11 @@ the most production-like. Full step-by-step instructions are in
    HomeKit service modules. Run with `make test` / `make coverage`.
 2. **API smoke test** — drives the real `RikaFirenetClient` against your stove
    to confirm credentials and that the API field names, status codes and
-   `revision` round-trip match your stove model. This is the most valuable
-   real-world check; see [doc/testing.md](doc/testing.md#2-api-smoke-test).
+   `revision` round-trip match your stove model. Run it with `make smoke`; it
+   also runs automatically at the end of `make test` when `STOVE_ID`,
+   `RIKA_EMAIL` and `RIKA_PASSWORD` are set (and is skipped with a message
+   otherwise). This is the most valuable real-world check; see
+   [doc/testing.md](doc/testing.md#2-api-smoke-test).
 3. **Local Homebridge dev instance** — `npm link` into an isolated
    `homebridge -D -U` instance to validate the HomeKit services, characteristics
    and v2 (ESM) loading. See [doc/testing.md](doc/testing.md#3-local-homebridge-dev-instance).
