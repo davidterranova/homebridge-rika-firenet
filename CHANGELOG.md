@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3 - 2026-06-03
+
+### Changed
+- Reworked `config.schema.json` to declare mandatory fields via a standard top-level JSON Schema `required` array (`name`, `email`, `password`, `stoveID`) instead of per-property `required` booleans.
+- `stoveID` is now marked as required in the configuration UI, with its description updated accordingly. The runtime still auto-detects the stove when an account has exactly one.
+
 ## 1.0.2 - 2026-06-03
 
 ### Security
