@@ -1,6 +1,6 @@
 {
   "name": "@davidterranova/homebridge-rika-firenet",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Memory-efficient Homebridge v2 plugin to control RIKA Firenet pellet stoves as a HomeKit thermostat.",
   "license": "MIT",
   "type": "module",
