@@ -3,12 +3,13 @@
 This document describes how to practically test `@davidterranova/homebridge-rika-firenet`,
 from the fastest feedback loop to a full production-like setup.
 
-There are four complementary layers:
+There are five complementary layers:
 
 1. [Unit tests](#1-unit-tests) — logic, no network, runs in CI.
 2. [API smoke test](#2-api-smoke-test) — verifies your credentials and the real RIKA API contract.
 3. [Local Homebridge dev instance](#3-local-homebridge-dev-instance) — verifies the HomeKit wiring.
-4. [Homebridge UI child bridge](#4-homebridge-ui-child-bridge) — closest to how end users run it.
+4. [Automated HomeKit integration test](#4-automated-homekit-integration-test) — layer 3, headless and credential-free.
+5. [Homebridge UI child bridge](#5-homebridge-ui-child-bridge) — closest to how end users run it.
 
 Start with layer 1, then 2. Layers 3 and 4 are about validating the HomeKit
 experience once you trust the underlying logic.
@@ -249,7 +250,73 @@ npm unlink -g @davidterranova/homebridge-rika-firenet
 
 ---
 
-## 4. Homebridge UI child bridge
+## 4. Automated HomeKit integration test
+
+This is layer 3 with the human taken out of the loop. Instead of pairing in the
+Apple Home app and clicking around, a test spins up a **real, headless
+Homebridge process** with the plugin loaded, then acts as a **HomeKit
+controller** (via [`hap-controller`](https://github.com/mrstegeman/hap-controller))
+to pair over HAP-IP and read/write characteristics. It asserts both the
+HomeKit-facing values *and* the control payloads that reach the backend.
+
+It is deterministic and credential-free because it points the plugin at an
+in-process **mock RIKA server** rather than rika-firenet.com. The plugin reads
+the backend URL from a hidden `baseUrl` platform-config field (intentionally
+absent from `config.schema.json`; see `src/platform.ts`), so nothing about the
+production code path changes.
+
+### Running it
+
+```bash
+make test-integration     # builds dist/ first, then runs the suite
+# or
+npm run test:integration
+```
+
+It is **not** part of `make test` / CI by default — it boots a process and pairs
+over the network, so it is slower and run on demand.
+
+### What it covers
+
+- The plugin **loads under Homebridge v2** (ESM) and registers its accessory.
+- **Pairing** succeeds and the accessory exposes the Thermostat, Heating Power
+  fan and Filter Maintenance services.
+- Round-trips: setting **Off / Heat (Comfort) / Auto (Automatic)**, the **target
+  temperature**, and the **Heating Power fan** (Manual mode + rotation speed)
+  produce the expected RIKA control writes and read back correctly.
+- Backend-driven state (a **cleaning** request, an **out-of-pellets fault**)
+  propagates to `FilterChangeIndication` and `StatusFault`.
+
+### Layout
+
+```
+test/integration/
+  homekit.test.ts                 # the scenarios
+  helpers/
+    mockRikaServer.ts             # stateful in-memory RIKA backend
+    homebridgeHarness.ts          # spawns headless Homebridge + pairs over HAP
+    hap.ts                        # HAP service/characteristic lookup helpers
+vitest.integration.config.ts      # separate config (sequential, longer timeout)
+```
+
+### Notes & caveats
+
+- The harness uses a **random bridge port and username** and a throwaway
+  `-U` storage dir per run, so it never collides with a real Homebridge or with
+  other runs — no global `npm link` required.
+- On **macOS** this works in-process because everything is on the host (the
+  controller connects directly to `127.0.0.1:<port>` and does not depend on mDNS
+  discovery). If you later containerise this (see below), remember mDNS does not
+  cross the Docker Desktop boundary on macOS — keep connecting by known IP/port
+  or run the controller inside the same container/network.
+- Future Docker layer: running Homebridge in its own network namespace gives
+  full isolation of the HAP port and the mDNS responder, which is the cleanest
+  way to parallelise these in CI. The mock-backend approach here is unchanged;
+  only the process/network boundary moves.
+
+---
+
+## 5. Homebridge UI child bridge
 
 The closest match to how end users run the plugin. It also validates that the
 published artifact loads (ESM, `engines`) and that `config.schema.json` renders
@@ -300,6 +367,7 @@ a usable form in the UI.
 | Type-check / build | `make build` |
 | Real API contract verified | [API smoke test](#2-api-smoke-test) against your stove |
 | HomeKit interactions verified | [Local dev instance](#3-local-homebridge-dev-instance) |
-| Loads as published artifact | [Child bridge](#4-homebridge-ui-child-bridge) from `npm pack` |
+| HomeKit interactions verified (automated) | [Integration test](#4-automated-homekit-integration-test) — `make test-integration` |
+| Loads as published artifact | [Child bridge](#5-homebridge-ui-child-bridge) from `npm pack` |
 | No accessory duplication on restart | Restart Homebridge, confirm a single accessory |
 | Polling respects RIKA's ≥60s guidance | Check debug logs for refresh cadence |
