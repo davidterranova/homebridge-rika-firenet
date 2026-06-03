@@ -21,6 +21,13 @@ interface RikaFirenetPlatformConfig extends PlatformConfig {
   pollingInterval?: number;
   minTemperature?: number;
   maxTemperature?: number;
+  /**
+   * Override for the RIKA Firenet API base URL. Intended for automated
+   * integration tests that point the plugin at a mock backend; it is
+   * deliberately omitted from `config.schema.json` so it never surfaces in the
+   * Homebridge UI.
+   */
+  baseUrl?: string;
 }
 
 const DEFAULT_POLLING_SECONDS = 60;
@@ -72,7 +79,12 @@ export class RikaFirenetPlatform implements DynamicPlatformPlugin {
       return;
     }
 
-    this.client = new RikaFirenetClient({ email, password, logger: this.log });
+    this.client = new RikaFirenetClient({
+      email,
+      password,
+      baseUrl: this.config.baseUrl,
+      logger: this.log,
+    });
 
     try {
       const stoveId = await this.resolveStoveId();

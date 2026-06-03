@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install test test-watch coverage lint build smoke update update-latest
+.PHONY: help install test test-watch coverage test-integration lint build smoke update update-latest
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -28,6 +28,9 @@ test-watch: ## Run the tests in watch mode
 
 coverage: ## Run the tests with a coverage report
 	npm run test:coverage
+
+test-integration: build ## Run the headless Homebridge HomeKit integration tests
+	npm run test:integration
 
 lint: ## Lint the source and tests
 	npm run lint

@@ -52,3 +52,27 @@ jobs:
           name: coverage-node-${{ matrix.node-version }}
           path: coverage/
           if-no-files-found: ignore
+
+  integration:
+    name: HomeKit integration test
+    runs-on: ubuntu-latest
+    # Only run once the fast lint/build/unit suite is green, on a single Node
+    # version (the supported floor) since this validates ESM plugin loading
+    # rather than runtime-specific behaviour.
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run HomeKit integration test
+        run: make test-integration

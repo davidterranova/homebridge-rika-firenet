@@ -96,6 +96,7 @@ make install         # install dependencies
 make build           # compile TypeScript to dist/
 make test            # run the unit tests (Vitest), plus the smoke test if creds are set
 make coverage        # run tests with a coverage report
+make test-integration # headless Homebridge + HAP controller end-to-end test (no credentials needed)
 make smoke           # read-only API smoke test against a real stove (STOVE_ID, RIKA_EMAIL, RIKA_PASSWORD)
 make lint            # eslint
 make update          # update dependencies within package.json ranges
@@ -105,7 +106,7 @@ Run `make` (or `make help`) to list all available targets. The codebase favors a
 
 ## Testing
 
-Testing happens in four complementary layers, ordered from fastest feedback to
+Testing happens in five complementary layers, ordered from fastest feedback to
 the most production-like. Full step-by-step instructions are in
 [`doc/testing.md`](doc/testing.md).
 
@@ -122,10 +123,15 @@ the most production-like. Full step-by-step instructions are in
 3. **Local Homebridge dev instance** — `npm link` into an isolated
    `homebridge -D -U` instance to validate the HomeKit services, characteristics
    and v2 (ESM) loading. See [doc/testing.md](doc/testing.md#3-local-homebridge-dev-instance).
-4. **Homebridge UI child bridge** — install the `npm pack` artifact and run it in
+4. **Automated HomeKit integration test** — layer 3 with no human: a headless
+   Homebridge process loads the plugin against a mock RIKA backend and a HAP
+   controller pairs and drives the characteristics. Run with
+   `make test-integration`. See
+   [doc/testing.md](doc/testing.md#4-automated-homekit-integration-test).
+5. **Homebridge UI child bridge** — install the `npm pack` artifact and run it in
    a child bridge: the closest match to how end users run the plugin, and a check
    that `config.schema.json` renders correctly. See
-   [doc/testing.md](doc/testing.md#4-homebridge-ui-child-bridge).
+   [doc/testing.md](doc/testing.md#5-homebridge-ui-child-bridge).
 
 Before releasing, work through the
 [pre-release checklist](doc/testing.md#pre-release-checklist).
