@@ -1,6 +1,6 @@
 # homebridge-rika-firenet
 
-[![Homebridge](https://img.shields.io/badge/Homebridge-v1.8%20%7C%20v2-blue)](https://homebridge.io)
+[![Homebridge](https://img.shields.io/badge/Homebridge-v2-blue)](https://homebridge.io)
 [![Node](https://img.shields.io/badge/node-22%20%7C%2024-green)](https://nodejs.org)
 
 A memory-efficient, [Homebridge v2](https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0) compatible plugin that exposes a [RIKA Firenet](https://www.rika-firenet.com) pellet stove to Apple Home (and any Matter platform bridged by Homebridge) as a HomeKit **thermostat**.
@@ -31,7 +31,7 @@ It is a modern, ESM, fully type-checked and unit-tested rewrite that replaces th
 
 ## Requirements
 
-- Homebridge `v1.8` or `v2`.
+- Homebridge `v2`.
 - Node.js `v22` or `v24`.
 - A RIKA stove with the RIKA Firenet module and an account at <https://www.rika-firenet.com>.
 
