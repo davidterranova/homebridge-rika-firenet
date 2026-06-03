@@ -28,6 +28,9 @@
   },
   "main": "dist/index.js",
   "exports": "./dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist",
     "config.schema.json",
