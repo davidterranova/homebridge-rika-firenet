@@ -44,26 +44,44 @@ so confirm them against real hardware before touching HomeKit.
 The `RikaFirenetClient` is dependency-free and runs standalone, so you can hit
 the real API in seconds without Homebridge.
 
+The smoke test is automated as the `make smoke` target and is also run
+automatically at the end of `make test` whenever the required credentials are
+present (it is skipped — with a message — otherwise).
+
 ### Steps
 
-1. Build the project so the compiled client is available:
+1. Provide your RIKA Firenet credentials. The targets read them either from your
+   shell environment or from a (git-ignored) `.env` file in the project root:
 
    ```bash
-   make build
+   # .env
+   STOVE_ID=1234567        # optional: pin a specific stove
+   RIKA_EMAIL=your-account@example.com
+   RIKA_PASSWORD=your-password
    ```
 
-2. Export your RIKA Firenet credentials (avoid putting them on the command line
-   so they don't end up in your shell history):
+   Or export them in your shell (avoid the command line so they don't end up in
+   your shell history):
 
    ```bash
    read -rs RIKA_EMAIL;    export RIKA_EMAIL
    read -rs RIKA_PASSWORD; export RIKA_PASSWORD
-   # Optional: pin a specific stove
-   export RIKA_STOVE_ID=1234567
+   export STOVE_ID=1234567 # optional: pin a specific stove
    ```
 
-3. Run an inline read-only smoke test against the compiled client. It logs in,
-   lists your stoves, and prints the decoded status:
+2. Run the read-only smoke test. It builds the project, logs in, lists your
+   stoves, and prints the decoded status:
+
+   ```bash
+   make smoke
+   ```
+
+   `make test` also runs it automatically after the unit tests when
+   `STOVE_ID`, `RIKA_EMAIL` and `RIKA_PASSWORD` are all set; if any are missing
+   it prints which ones and skips the smoke test.
+
+   Under the hood this runs `scripts/smoke-test.mjs` against the compiled client
+   in `dist/`. The equivalent inline command is:
 
    ```bash
    node --input-type=module -e '
@@ -80,7 +98,7 @@ the real API in seconds without Homebridge.
    const stoves = await client.login();
    console.log("Stoves:", stoves);
 
-   const id = process.env.RIKA_STOVE_ID ?? stoves[0].id;
+   const id = process.env.STOVE_ID ?? stoves[0].id;
    const status = await client.getStatus(id);
 
    console.log({
@@ -127,7 +145,7 @@ const client = new RikaFirenetClient({
 });
 
 await client.login();
-const id = process.env.RIKA_STOVE_ID ?? (await client.listStoves())[0].id;
+const id = process.env.STOVE_ID ?? (await client.listStoves())[0].id;
 const status = await client.getStatus(id);
 
 const next = Number(status.controls.targetTemperature) + 1;
